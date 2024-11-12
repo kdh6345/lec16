@@ -33,5 +33,24 @@ def clear():
 
 
 # fill here
+collision_pairs = {}
+
+def add_collision_pair(group, a, b):
+    if group not in collision_pairs:
+        print(f'Added new group {group}')
+        collision_pairs[group] = [[], []]
+    if a:
+        collision_pairs[group][0].append(a)
+    if b:
+        collision_pairs[group][1].append(b)
+
 def collide(a, b):
-    pass
+    left_a, bottom_a, right_a, top_a = a.get_bb()
+    left_b, bottom_b, right_b, top_b = b.get_bb()
+
+    if left_a > right_b: return False
+    if right_a < left_b: return False
+    if top_a < bottom_b: return False
+    if bottom_a > top_b: return False
+
+    return True

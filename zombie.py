@@ -33,6 +33,9 @@ class Zombie:
         self.load_images()
         self.frame = random.randint(0, 9)
         self.dir = random.choice([-1,1])
+        self.size=200
+        self.shrunk = False
+        self.shrunk_count = 0
 
 
     def update(self):
@@ -43,14 +46,31 @@ class Zombie:
         elif self.x < 800:
             self.dir = 1
         self.x = clamp(800, self.x, 1600)
+
+        if self.shrunk:
+            self.size = 100
+
         pass
 
+    def shrink_or_remove(self):
+        if self.shrunk_count == 0:
+            self.shrunk = True
+            self.size = 100
+            self.y -= 50
+            self.shrunk_count += 1
+        else:
+            game_world.remove_object(self)
+    def get_bb(self):
+        width = self.size * 0.4
+        height = self.size * 0.7
+        return self.x - width, self.y - height+20, self.x + width, self.y + height-20
 
     def draw(self):
         if self.dir < 0:
-            Zombie.images['Walk'][int(self.frame)].composite_draw(0, 'h', self.x, self.y, 200, 200)
+            Zombie.images['Walk'][int(self.frame)].composite_draw(0, 'h', self.x, self.y, self.size, self.size)
         else:
-            Zombie.images['Walk'][int(self.frame)].draw(self.x, self.y, 200, 200)
+            Zombie.images['Walk'][int(self.frame)].draw(self.x, self.y, self.size, self.size)
+        draw_rectangle(*self.get_bb())
 
     def handle_event(self, event):
         pass

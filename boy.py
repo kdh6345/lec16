@@ -121,15 +121,13 @@ class Run:
         boy.image.clip_draw(int(boy.frame) * 100, boy.action * 100, 100, 100, boy.x, boy.y)
 
 
-
-
-
 class Boy:
 
     def __init__(self):
         self.x, self.y = 400, 90
         self.face_dir = 1
         self.ball_count = 10
+        self.balls = []
         self.font = load_font('ENCR10B.TTF', 16)
         self.image = load_image('animation_sheet.png')
         self.state_machine = StateMachine(self)
@@ -150,19 +148,21 @@ class Boy:
         self.state_machine.add_event(('INPUT', event))
         pass
 
-    def draw(self):
-        self.state_machine.draw()
-        self.font.draw(self.x-10, self.y + 50, f'{self.ball_count:02d}', (255, 255, 0))
-
     def fire_ball(self):
         if self.ball_count > 0:
             self.ball_count -= 1
             ball = Ball(self.x, self.y, self.face_dir*10)
+
             game_world.add_object(ball)
+            self.balls.append(ball)
 
     def get_bb(self):
-        # fill here
-        pass
+        return self.x - 25, self.y - 50, self.x + 25, self.y + 50
+
+    def draw(self):
+        self.state_machine.draw()
+        self.font.draw(self.x - 10, self.y + 50, f'{self.ball_count:02d}', (255, 255, 0))
+        draw_rectangle(*self.get_bb())
 
     def handle_collision(self, group, other):
         # fill here
